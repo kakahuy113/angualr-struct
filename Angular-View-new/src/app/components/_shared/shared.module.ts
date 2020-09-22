@@ -22,6 +22,7 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { LazyLoadImageModule } from "ng-lazyload-image";
 import { ProductDirective } from "../product/product-simple/product.directive";
 import { HeaderService } from './header/header.service';
+import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
 
 @NgModule({
 	declarations: [
@@ -46,6 +47,8 @@ import { HeaderService } from './header/header.service';
 		SwiperModule,
 		MatProgressBarModule,
 		LazyLoadImageModule,
+		RecaptchaModule,
+		RecaptchaFormsModule
 	],
 	exports: [
 		CommonModule,

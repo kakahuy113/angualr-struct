@@ -6,7 +6,6 @@ import { ContactComponent } from "./contact.component";
 import { MapComponent } from "../_shared/map/map.component";
 import { AgmCoreModule } from "@agm/core";
 import { SharedModule } from "../_shared/shared.module";
-
 @NgModule({
 	declarations: [ContactComponent, MapComponent],
 	imports: [

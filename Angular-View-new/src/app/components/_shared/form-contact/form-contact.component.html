@@ -42,7 +42,14 @@
 					[(ngModel)]="FormContact.content"></textarea>
 				<div class="field-validation-error"></div>
 			</div>
-			<div class="form-group col-lg-12 text-right">
+			<div class="form-group col-lg-6 ">
+					<re-captcha
+					(resolved)="resolved($event)"
+					(siteKey)="siteKey
+					">
+					</re-captcha>
+			</div>
+			<div class="form-group col-lg-6 text-right">
 				<button class="tt-u btn-form cl-white bd-0 ml-at" (click)="submitForm()">
 					gửi
 				</button>

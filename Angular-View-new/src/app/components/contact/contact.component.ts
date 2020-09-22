@@ -34,7 +34,6 @@ export class ContactComponent implements OnInit {
 		this.setPageInformation(opts);
 		this.getBranch();
 	}
-
 	setPageInformation(opts) {
 		this.httpSvc.get(API.Category.Get, opts).subscribe((response) => {
 			const metaObject: MetaModel = {

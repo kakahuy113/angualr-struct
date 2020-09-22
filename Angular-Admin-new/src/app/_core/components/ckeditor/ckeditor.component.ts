@@ -12,7 +12,7 @@ import {
 	forwardRef,
 	ElementRef,
 	AfterViewInit,
-	OnDestroy,
+	OnDestroy
 } from '@angular/core'
 
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
@@ -20,6 +20,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { getEditorNamespace } from './ckeditor.helpers'
 
 import { CKEditor4 } from './ckeditor'
+
+import grapesjs from 'grapesjs';
 
 declare let CKEDITOR: any
 
@@ -195,7 +197,8 @@ export class CKEditorComponent
 	@Input() editorUrl =
 		'https://cdn.ckeditor.com/4.14.0/full/ckeditor.js'
 
-	constructor(private elementRef: ElementRef, private ngZone: NgZone) { }
+	constructor(private elementRef: ElementRef, private ngZone: NgZone) { 
+	}
 
 	ngAfterViewInit(): void {
 		getEditorNamespace(this.editorUrl)
@@ -226,10 +229,10 @@ export class CKEditorComponent
 		this.onTouched = callback
 	}
 
-	private createEditor(): void {
+	private createEditor(grapEditor): void {
 		const element = document.createElement(this.tagName)
 		this.elementRef.nativeElement.appendChild(element)
-
+		
 		if (this.type === CKEditor4.EditorType.DIVAREA) {
 			this.config = this.ensureDivareaPlugin(this.config || {})
 		}
@@ -238,6 +241,8 @@ export class CKEditorComponent
 			this.type === CKEditor4.EditorType.INLINE
 				? CKEDITOR.inline(element, this.config)
 				: CKEDITOR.replace(element, this.config)
+
+		this.addPlugin(instance)
 
 		instance.once('instanceReady', (evt) => {
 			this.instance = instance
@@ -277,6 +282,76 @@ export class CKEditorComponent
 				})
 			}
 		})
+	}
+
+	addPlugin(instance: CKEditor4.Editor) {
+		// My plugin
+		instance.ui.addButton('grapesJS', {
+			label: "Chỉnh sửa HTML",
+			command: 'grapesJS',
+			toolbar: 'insert',
+			icon: window.location.origin + '/assets/images/icons/html.svg'
+		});
+		instance.addCommand("grapesJS", {
+			exec: function (item__CKeditor) {
+				// OPPEN GRAPES
+				const formDiv = document.querySelector(".block-form");
+				// Content
+				const popup = document.createElement('div');
+				popup.classList.add("popup__grapesJS")
+				//create the DOM element 
+				const wrapper = document.createElement('div');
+				wrapper.classList.add("grapesJS__wrapper", "mb-3")
+				const grapeHtml = document.createElement('div');
+				grapeHtml.classList.add("grapes-html")
+				wrapper.appendChild(grapeHtml)
+				popup.appendChild(wrapper)
+				// Button
+				const cancel = document.createElement('div');
+				cancel.classList.add("btn", "btn-danger", "btn-close-grapesJS", "mb-3")
+				cancel.innerHTML = "Huỷ bỏ"
+				const ok = document.createElement('div');
+				ok.classList.add("btn", "btn-success", "btn-submit-grapesJS", "mb-3")
+				ok.innerHTML = "Xác nhận"
+
+				popup.appendChild(cancel);
+				popup.appendChild(ok);
+				formDiv.appendChild(popup);
+
+				var sheet = document.createElement('style')
+				sheet.innerHTML = ".popup__grapesJS {position: fixed;width: 70%;height: 600px;top: 50%;left: 50%;padding: 25px;transform: translate(-50%, -50%);margin-left: 150px;background: #ffffff;z-index: 300;}.grapesJS__wrapper {height:500px ; width: 100%}";
+				document.body.appendChild(sheet);
+
+				// DATA HERE!!!
+				const dataCKEditor = item__CKeditor.getData();
+				// SET DATA CỦA CKEDITOR VÀO GRAPE
+				grapesjs.init({
+					container: [".grapes-html"],
+					fromElement: true,
+					height: "100%",
+					width: "100%",
+					noticeOnUnload: false,
+					assetManager: false,
+					storageManager: false,
+					panels: {
+						defaults: [],
+					},
+					forceClass: false,
+					draggable: false,
+					canvas: {
+						// styles: [coreCSS, mainCSS],
+						// scripts: [coreJS, mainJS],
+					},
+				}).setComponents(dataCKEditor)
+				// SUBMIT GRAPESJS
+				// $('.btn-submit-grapesJS').on('click', function (e) {
+				// 	e.preventDefault();
+				// 	const dataGrapesHTML = GrapesEditor.getHtml();
+				// 	item__CKeditor.setData(dataGrapesHTML);
+				// 	closePopup();
+				// });
+			}
+		});
 	}
 
 	private subscribe(editor: any): void {
@@ -332,7 +407,7 @@ export class CKEditorComponent
 
 	private ensureDivareaPlugin(config: CKEditor4.Config): CKEditor4.Config {
 		let { extraPlugins, removePlugins } = config
-
+		
 		extraPlugins = this.removePlugin(extraPlugins, 'divarea') || ''
 		extraPlugins = extraPlugins.concat(
 			typeof extraPlugins === 'string' ? ',divarea' : 'divarea'

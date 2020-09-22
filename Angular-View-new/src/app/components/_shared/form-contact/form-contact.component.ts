@@ -16,16 +16,20 @@ export class FormContactComponent implements OnInit {
 	@Input("departments") departments: Array<Category>;
 	@Input("categoryUrl") categoryUrl: string;
 	FormContact: FormContactModel = new FormContactModel();
-
+	siteKey: string = "6LeTx6cZAAAAAHCj3fyZaYh8GHoB3p8NFv5EFocZ"
+	tokenCaptcha: string
 	constructor(
 		private httpSvc: HttpService,
 		@Inject(DOCUMENT) private document: Document
-	) {}
-
-	ngOnInit() {}
+	) {
+	}
+	ngOnInit() {
+		this.getSiteKeyRecaptcha();
+	}
 
 	submitForm() {
 		const option = new InputRequestOption();
+		this.FormContact.captcha = this.tokenCaptcha
 		option.body = this.FormContact;
 		this.httpSvc.post(API.Contact.Submit, option).subscribe((response) => {
 			if (response.code === 200) {
@@ -40,7 +44,18 @@ export class FormContactComponent implements OnInit {
 			}
 		});
 	}
-
+	getSiteKeyRecaptcha() {
+		this.httpSvc.get(API.Setting.Gets).subscribe((res) => {
+			if(res.code === 200) {
+				this.siteKey = res.data[6].value
+			} else {
+				alert(res.message)
+			}
+		})
+	}
+	resolved(e) {
+		this.tokenCaptcha = e;
+	}
 	validationForm(value: any) {
 		let result: boolean;
 		// const name = value.contactName;

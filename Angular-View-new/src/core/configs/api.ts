@@ -33,4 +33,8 @@ export const API = {
 		Gets: "/api/Contact/gets",
 		Submit: "/api/Contact/submit",
 	},
+	Setting: {
+		Gets: '/api/Setting/gets',
+		Update: '/api/Setting/update',
+	}
 };

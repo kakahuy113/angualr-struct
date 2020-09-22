@@ -5,6 +5,7 @@ export class FormContactModel {
 	email: string
 	address: string
 	content: string
+	captcha: string
 	createdDate: string
 	departments: string
 }
